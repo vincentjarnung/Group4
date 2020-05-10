@@ -1,3 +1,5 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -74,7 +76,8 @@ public class DBManager {
             break;   
             case 1:
             //Logga In
-            
+            	JOptionPane.showMessageDialog(null,(LoggaIn()));
+            	menu();
             break;
             case 0:
             //Avsluta
@@ -92,7 +95,6 @@ public class DBManager {
       String[] ans = new String[9];
       
       System.out.println(li[0]);
-      
       generateMemDialog(li, ans);  
       
       String[] options = {"Gruppträning","Gymträning"};
@@ -101,9 +103,9 @@ public class DBManager {
       if (x == JOptionPane.CLOSED_OPTION)
          menu();   
       if (x==0)
-         memshipID = "Gruppträning";
+         memshipID = "memship02";
       if (x==1)
-         memshipID = "Gymträning";
+         memshipID = "memship01";
       
       int counter = getNumOfRows("Member");
       
@@ -124,7 +126,6 @@ public class DBManager {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             System.out.println("Funkar kung");
             
-            
             //Funkar allt ändrar jag frågetäcknena i sql-stringen(sql) till de som någon har matat in
             pstmt.setObject(1, memID);
             pstmt.setObject(2, new BigDecimal(PNR));
@@ -135,8 +136,9 @@ public class DBManager {
             pstmt.setObject(7, adress);
             pstmt.setObject(8, postalCode);
             pstmt.setObject(9, city);
-            pstmt.setObject(10, memshipID);
-            pstmt.setObject(11, password);
+            pstmt.setObject(10, password);
+            pstmt.setObject(11, memshipID);
+            
             
             
             pstmt.executeUpdate();
@@ -151,7 +153,47 @@ public class DBManager {
         
       return result;
    }       
-    
+
+   public String LoggaIn() {
+	   String sql = "SELECT mail,password FROM Member";
+	   String result = ""; 
+	   Boolean wrong = false;
+	   Boolean checker = false;
+	   String[] results = new String[2];
+	   
+	   
+	   
+	   while(true) {
+		   results = generateLogInDialog(wrong,results);
+		   
+		   try {
+	           Statement stmt  = conn.createStatement();
+	           ResultSet rs    = stmt.executeQuery(sql);
+	           
+	           while(rs.next()) {
+	        	   System.out.println(rs.getString("mail") + " : " + results[0]+ "\n" + rs.getString("password") + " : " + results[1]);
+	        	   if ( results[0].equals(rs.getString("mail")) && results[1].equals(rs.getString("password")) ) {
+	        	   		checker = true;
+	        	   		break;
+	        	   }
+	           }
+	           System.out.println(checker);
+	           
+	           if (checker) {
+	        	   result = "Välkommen";
+	        	   break;
+	           }else {
+	        	   wrong = true;
+	           }
+	       
+		   }catch (SQLException e) {
+			   System.out.println("Funkar ej");
+			   System.out.println(e.getMessage());
+		   }
+	   }
+	   return result;
+   }
+   
    public void generateMemDialog(Boolean[] lis, String[] ans){
 
       
@@ -252,6 +294,55 @@ public class DBManager {
          generateMemDialog(nli, ans);
    }
    
+   public String[] generateLogInDialog(Boolean wrong, String[] result) {
+	   
+	   
+	   JTextField usernameField = new JTextField(result[0]);
+	   JPasswordField passwordField = new JPasswordField();
+	   
+	   
+	   Object[] options = {"Log In", "Tillbaka", "Bli Medlem"};
+	   
+	   Object[] message = {
+			   "Email: ", usernameField,
+			   "Lösenord: ", passwordField,
+	   };
+	   Object[] messageWrong = {
+			   "<html><font color=#FF0000>Fel användarnamn och/eller lösenord</font>" ,
+			   "Email: ", usernameField,
+			   "Lösenord: ", passwordField,
+	   };
+	   
+	   if(!wrong) {
+		   int option = JOptionPane.showOptionDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,options[0]);
+		     System.out.println("Option = " + option);
+		   	  if (option == JOptionPane.CLOSED_OPTION) 
+		    	  menu();
+		      else if (option == 1) 
+		    	  menu();
+		      else if (option == 0) {
+		    	  result[0] = usernameField.getText();
+	    		  result[1] = String.valueOf(passwordField.getPassword());
+		      }else if (option == 2){
+		    	  BliMedlem();
+		      }
+		   	  
+	   }else {
+		   int option = JOptionPane.showOptionDialog(null, messageWrong,"Skriv in dina uppgifer!", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,options[0]);
+		      if (option == JOptionPane.CLOSED_OPTION) {
+		    	  menu(); System.out.print("close");}
+		      else if (option == 1) {
+		          menu(); System.out.print("close");}
+		      else if (option == 0) {
+		    	  result[0] = usernameField.getText();
+	    		  result[1] = String.valueOf(passwordField.getPassword());	    
+		      }else if (option == 2) {
+		    	  BliMedlem();
+		      }
+		      
+	   }
+	return result;  
+   }	   
    
    public int getNumOfRows(String table) {
 	   String sql = "select count(*) from "+ table;
@@ -269,7 +360,11 @@ public class DBManager {
 
 	   return result;
    }
+     
 }
+
+
+
 
 	
 
