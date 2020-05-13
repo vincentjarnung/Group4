@@ -1,8 +1,11 @@
 
-import java.io.*;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+
 import javax.swing.*;
 import java.util.*;
+import java.util.Date;
+
 import org.sqlite.SQLiteConfig;
 
 public class DBManager {
@@ -18,6 +21,15 @@ public class DBManager {
    String city = "";
    String password = "";
    String memshipID = "";
+   
+   String startDate = "";
+   String endDate = "";
+   int discount = 0;
+   
+   String paymentID = "";
+   int price = 0;
+   String payType = "contract";
+   String exDate = "";
 
    public static Connection conn = null;
    // Sökväg till SQLite-databas. OBS! Ändra sökväg så att den pekar ut din databas
@@ -39,7 +51,10 @@ public class DBManager {
          System.exit(0);
 
       }
+      
+      
       DBManager men = new DBManager();
+      men.updateDB();
       men.menu();
 
 
@@ -49,7 +64,7 @@ public class DBManager {
    public void menu(){
 	   
 	   while (true){
-		 String[] options = {"Avsluta","Logga In","Våra Gym","Boka Pass","Bli Medlem"};
+		 String[] options = {"Avsluta","Logga In","Våra Gym","Bli Medlem"};
          int x = JOptionPane.showOptionDialog(null, "Välkommen Till FitnessAB","Meny",
                                               JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, null);
          //Om man stänger rutan stängs programmet
@@ -58,18 +73,24 @@ public class DBManager {
          }
 
          switch(x){
-            case 4:
+            case 3:
             //Bli Medlem
             	JOptionPane.showMessageDialog(null,(BliMedlem()));
             	menu();
             break;
-            case 3:
-            //Boka pass
-
-            break;
             case 2:
             //Våra Gym
-
+            	String[] option = {"Ekdalen","Aspvägen","Björkvägen"};
+            	int choice = JOptionPane.showOptionDialog(null, "Välj Gym","Våra Gym",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, null);
+            	if (choice == 2)
+            		gymInfo("gym01");
+            	else if (choice == 1)
+            		gymInfo("gym02");
+            	else if (choice == 2)
+            		gymInfo("gym03");
+            	else if (choice == JOptionPane.CLOSED_OPTION)
+            		menu();
             break;
             case 1:
             //Logga In
@@ -85,42 +106,106 @@ public class DBManager {
    }
 
    public String BliMedlem(){
-      String result = "";
+	  Date date = new Date();
+	  Calendar calendar = Calendar.getInstance();
+	  calendar.setTime(date);
+	  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	      
+	  startDate = sdf.format(calendar.getTime());
+
+	  System.out.println(startDate);
+	   
+	  String result = "";
       Boolean[] li = new Boolean[9];
       Arrays.fill(li,Boolean.TRUE);
       String[] ans = new String[9];
 
-      System.out.println(li[0]);
+      String[] options = {"Nästa","Tillbaka"};
+      String[] choices = {
+    		  "Gymträning 3 månader 249 kr/månaden", 
+    		  "Gymträning 6 månader 229 kr/månaden", 
+    		  "Gymträning 12 månader 199 kr/månaden",
+    		  "Gruppträning 3 månader 299 kr/månaden",
+    		  "Gruppträning 6 månader 279 kr/månaden",
+    		  "Gruppträning 12 månader 249 kr/månaden"
+    		  
+      };
+      JComboBox<String> cb = new JComboBox<String>(choices);
+      String mem1 = "\nGymträning: \nDu får tillgång till gymmen och kan träna där fritt!";
+      String mem2 = "\nGruppträning: \nDu får tillgång till gymmen och gruppträningar samt onlineträning!";
+      
+      Object[] message = {
+    		  "Välj medlemsskap och längd",
+    		  mem1, mem2,
+    		  cb
+      };
+      int option = JOptionPane.showOptionDialog(null,message,"Välj medlemsskap",JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,null,options,options[0]);
+      if (option == JOptionPane.CLOSED_OPTION)
+    	  menu();
+      else if (option == 1)
+    	  menu();
+      else if (option == JOptionPane.OK_OPTION) {
+    	  int n = cb.getSelectedIndex();
+    	  if (n == 0) {
+    		  memshipID = "gym3";
+    		  price = 249; 
+    	  }
+    	  if (n == 1) {
+    		  memshipID = "gym6";
+    		  price = 229;
+    	  }
+    	  if (n == 2) {
+    		  memshipID = "gym12";
+    		  price = 199;
+    	  }
+    	  if (n == 3) {
+    		  memshipID = "group3";
+    		  price = 299;
+    	  }
+    	  if (n == 4) {
+    		  memshipID = "group6";
+    		  price = 279;  
+    	  }
+    	  if (n == 5) {
+    		  memshipID = "group12";
+    		  price = 249;
+    	  }
+      }
+      
+      System.out.println(Integer.parseInt(memshipID.substring(memshipID.length()-1)));
+      if (Integer.parseInt(memshipID.substring(memshipID.length()-1)) == 3)
+    	  calendar.add(Calendar.MONTH, 3);
+      else if(Integer.parseInt(memshipID.substring(memshipID.length()-1)) == 6)
+    	  calendar.add(Calendar.MONTH, 6);
+      else if(Integer.parseInt(memshipID.substring(memshipID.length()-1)) == 2)
+    	  calendar.add(Calendar.MONTH, 12);
+      
+      endDate = sdf.format(calendar.getTime());
+      System.out.println(startDate + " : " + endDate);
       generateMemDialog(li, ans);
-
-      String[] options = {"Gruppträning","Gymträning"};
-      int x = JOptionPane.showOptionDialog(null, "Välj Medlemskap \n\nGymträning: \nDu får tillgång till gymmen och kan träna där fritt! \n\nGruppträning: \nDu får tillgång till gymmen och gruppträningar samt onlineträning! ","Välj Medlemskap",
-                                              JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, JOptionPane.PLAIN_MESSAGE);
-      if (x == JOptionPane.CLOSED_OPTION)
-         menu();
-      if (x==0)
-         memshipID = "memship02";
-      if (x==1)
-         memshipID = "memship01";
-
-      int counter = getNumOfRows("Member");
-
-      if (counter <10)
-          memID = "mem0000" + counter;
-       else if (counter <100)
-          memID = "mem000" + counter;
-       else if (counter <1000)
-          memID = "mem00" + counter;
-       else if (counter <10000)
-          memID = "mem0" + counter;
-       else
-    	  memID = "mem" + counter;
+      
+      memID = getID("Member");
+      paymentID = getID("Payment");
+      
+      calendar.add(Calendar.DAY_OF_MONTH, 14);
+	   
+	  exDate = sdf.format(calendar.getTime());
+	   
+	  System.out.println(exDate);
+      
 
       System.out.println(memID);
       Object[] memVal = {memID , PNR, first_name, last_name, email, phoneNumber, adress, postalCode, city, password, memshipID};
+      Object[] conVal = {memID, memshipID, startDate, discount, endDate};
+      Object[] payVal = {paymentID, payType, startDate, exDate, memID, price};
+     
+      
+      
       
       if (insertToDB("Member",memVal))
-    	  result = first_name + " " + last_name + " är tillagd.";
+    	  if(insertToDB("Contract",conVal))
+    		  if (insertToDB("Payment",payVal))
+    			  result = first_name + " " + last_name + " är tillagd.";
       else
     	  result = "Där uppstod ett problem med databasen försök igen eller kontakta kundservice.";
       
@@ -129,24 +214,27 @@ public class DBManager {
 
    public String LoggaIn() {
 	   String sql = "SELECT mail,password FROM Member";
+	   
 	   String result = "";
 	   Boolean wrong = false;
-	   Boolean checker = false;
+	   Boolean checker = true;
 	   String[] results = new String[2];
 
 
 
 	   while(true) {
 		   results = generateLogInDialog(wrong,results);
-
+		   String sql2 = "SELECT endDate FROM Contract NATURAL JOIN Member WHERE mail = ";
+		   sql2 += "'" + results[0] + "'";
+		   System.out.println(sql2);
 		   try {
 	           Statement stmt  = conn.createStatement();
 	           ResultSet rs    = stmt.executeQuery(sql);
-
+	           
 	           while(rs.next()) {
 	        	   System.out.println(rs.getString("mail") + " : " + results[0]+ "\n" + rs.getString("password") + " : " + results[1]);
-	        	   if ( results[0].equals(rs.getString("mail")) && results[1].equals(rs.getString("password")) ) {
-	        	   		checker = true;
+	        	   if ( !results[0].equals(rs.getString("mail")) || !results[1].equals(rs.getString("password")) ) {
+	        	   		checker = false;
 	        	   		break;
 	        	   }
 	           }
@@ -334,7 +422,6 @@ public class DBManager {
 	   return result;
    }
 
-   
    public Boolean insertToDB(String table, Object[] values) {
 	   Boolean suc = false;
 	   String nuOfVal = "";
@@ -364,4 +451,167 @@ public class DBManager {
      }
 	 return suc;
    }
+   
+   public void updateDB() {
+	   String getsql = "SELECT endDate, memID, date FROM Contract NATURAL JOIN Member NATURAL JOIN Payment";
+	   ArrayList<String> isOutdated = new ArrayList<String>(); 
+	   ArrayList<String> newPayment = new ArrayList<String>();
+	   Date date = new Date();
+	   Calendar calendar = Calendar.getInstance();
+	   calendar.setTime(date);
+	   SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	   String today = sdf.format(calendar.getTime());
+	   int year = calendar.get(Calendar.YEAR);
+	   int month = calendar.get(Calendar.MONTH);
+	   int day = calendar.get(Calendar.DAY_OF_MONTH);
+	   
+	   int endYear = 0;
+	   int endMonth = 0;
+	   int endDay = 0;
+
+	   try {
+           Statement stmt  = conn.createStatement();
+           ResultSet rs    = stmt.executeQuery(getsql);
+           while(rs.next()) {
+        	   
+        	   String endDate = rs.getString("endDate");
+        	   String mem = rs.getString("memID");
+        	   String payDate = rs.getString("date");
+        	   
+        	   System.out.println(endDate + " : " + mem);
+
+        	   endYear = Integer.parseInt(endDate.substring(0,4));
+        	   endMonth = Integer.parseInt(endDate.substring(5,7));
+        	   endDay = Integer.parseInt(endDate.substring(8));
+        	   
+        	   if(year == endYear ) {
+        		   if(month>endMonth)
+        			   isOutdated.add(mem);
+        		   else if(month == endMonth && day>endDay) 
+        			   isOutdated.add(mem); 
+        		   else if(month < endMonth && day == endDay && !payDate.equals(today))
+        			   newPayment.add(mem);
+        		   else if(month == endMonth && day == endDay && !payDate.equals(today))
+        			   newPayment.add(mem);
+        	   }else if(year > endYear)
+        		   isOutdated.add(mem);
+        	   else if(day == endDay && !payDate.equals(today))
+        		   newPayment.add(mem);
+        	   
+           }
+
+	   }catch (SQLException e) {
+		   System.out.println("Funkar ej");
+		   System.out.println(e.getMessage());
+	   }
+	
+	   
+	   for (int i = 0;i<isOutdated.size(); i++) {
+		   String insertsql = "DELETE * FROM Member WHERE memID = '" + isOutdated.get(i) + "'";
+		   
+		   try {
+	           Statement stmt  = conn.createStatement();
+	           stmt.executeQuery(insertsql);
+	           
+		   }catch (SQLException e) {
+			   System.out.println("Funkar ej");
+			   System.out.println(e.getMessage());
+		   }
+	   }
+	   for (int i = 0;i<newPayment.size(); i++) {
+		   String getPaymentsql = "SELECT price FROM Membership NATURAL JOIN Contract NATURAL JOIN Member where memID = '" + newPayment.get(i) + "'";
+		   
+		   try {
+	           Statement stmt  = conn.createStatement();
+	           ResultSet rs = stmt.executeQuery(getPaymentsql);
+	           price = rs.getInt("price");
+		   }catch (SQLException e) {
+			   System.out.println("Funkar ej");
+			   System.out.println(e.getMessage());
+		   }
+		   
+		   
+		   paymentID = getID("Payment");
+		   calendar.add(Calendar.DAY_OF_MONTH, 14);
+		   exDate = sdf.format(calendar.getTime());
+		   
+		   Object[] payVal = {paymentID, payType, today, exDate, newPayment.get(i), price};
+		   
+		   insertToDB("Payment",payVal);
+		   
+	   }
+	   
+   }
+   
+   public String getID(String id) {
+	   int counter = getNumOfRows(id);
+	   String ID = "";
+	   String startID = id.substring(0,3).toLowerCase();
+	   
+	   if (counter <10)
+	          ID = startID+"0000" + counter;
+	       else if (counter <100)
+	          ID = startID+"000" + counter;
+	       else if (counter <1000)
+	          ID = startID+"00" + counter;
+	       else if (counter <10000)
+	          ID = startID+"pay0" + counter;
+	       else
+	    	  ID = startID+ counter;
+	   
+	   
+	   return ID;
+   }
+   
+   public void gymInfo(String gymID) {
+	   String roomSql = "SELECT Room.name, capacity FROM Gym INNER JOIN Room ON Gym.gymID = Room.gymID where Gym.gymID = '" + gymID + "'";
+	   String machineSql = "SELECT Machine.name, trainArea  FROM Gym INNER JOIN Machine ON Gym.gymID = Machine.gymID where Gym.gymID = '" + gymID + "'";
+	   String weightSql = "SELECT Weight.name, weight FROM Gym INNER JOIN Weight ON Gym.gymID = Weight.gymID where Gym.gymID = '" + gymID + "'";
+	   ArrayList<String> roomInfo = new ArrayList<String>();
+	   ArrayList<String> machineInfo = new ArrayList<String>();
+	   ArrayList<String> weightInfo = new ArrayList<String>();
+	   try {
+           Statement stmt  = conn.createStatement();
+           ResultSet rs    = stmt.executeQuery(roomSql);
+           while(rs.next()) {
+        	   roomInfo.add(rs.getString(1) + " med " + rs.getString(2) + " platser\n" );
+           }
+           rs    = stmt.executeQuery(machineSql);
+           while(rs.next()) {
+        	   machineInfo.add(rs.getString(1) + "där man tränar " + rs.getString(2) + "\n");
+           }
+           rs    = stmt.executeQuery(weightSql);
+           while(rs.next()) {
+        	   weightInfo.add(rs.getString(1) + " " + rs.getString(2) + "kg\n");
+           }
+
+	   }catch (SQLException e) {
+		   System.out.println("Funkar ej");
+		   System.out.println(e.getMessage());
+	   }
+	   StringBuilder builder1 = new StringBuilder();
+	   for (String value : roomInfo) {
+	       builder1.append(value);
+	   }
+	   String roomtext = builder1.toString();
+	   
+	   StringBuilder builder2 = new StringBuilder();
+	   for (String value : machineInfo) {
+	       builder2.append(value);
+	   }
+	   String machinetext = builder2.toString();
+	   
+	   StringBuilder builder3 = new StringBuilder();
+	   for (String value : weightInfo) {
+	       builder3.append(value);
+	   }
+	   String weighttext = builder3.toString();
+	   
+	   
+	   Object[] message = {"Rooms: \n", roomtext, "\nMachines: \n", machinetext, "\nWeights: \n", weighttext};
+	   String[] options = {"Tillbaka"};
+	   
+	   JOptionPane.showOptionDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,options[0]);
+   }
+   
 }
