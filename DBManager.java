@@ -186,6 +186,7 @@ public class DBManager {
       
       memID = getID("Member");
       paymentID = getID("Payment");
+      System.out.println(paymentID);
       
       calendar.add(Calendar.DAY_OF_MONTH, 14);
 	   
@@ -217,7 +218,7 @@ public class DBManager {
 	   
 	   String result = "";
 	   Boolean wrong = false;
-	   Boolean checker = true;
+	   Boolean checker = false;
 	   String[] results = new String[2];
 
 
@@ -233,8 +234,8 @@ public class DBManager {
 	           
 	           while(rs.next()) {
 	        	   System.out.println(rs.getString("mail") + " : " + results[0]+ "\n" + rs.getString("password") + " : " + results[1]);
-	        	   if ( !results[0].equals(rs.getString("mail")) || !results[1].equals(rs.getString("password")) ) {
-	        	   		checker = false;
+	        	   if ( results[0].equals(rs.getString("mail")) && results[1].equals(rs.getString("password")) ) {
+	        	   		checker = true;
 	        	   		break;
 	        	   }
 	           }
@@ -307,17 +308,17 @@ public class DBManager {
             nli[0] = true;
 
          }else{ans[0] = ""; nli[0] = false; checker = false;}
-         if (fields[1].getText() != null) {
+         if (!fields[1].getText().equals("")) {
             ans[1] = fields[1].getText();
             first_name = fields[1].getText();
             nli[1] = true;
          }else{ans[1] = ""; nli[1] = false; checker = false;}
-         if (fields[2].getText() != null) {
+         if (!fields[2].getText().equals("")) {
             ans[2] = fields[2].getText();
             last_name = fields[2].getText();
             nli[2] = true;
          }else{ans[2] = ""; nli[2] = false; checker = false;}
-         if (fields[3].getText() != null){
+         if (!fields[3].getText().equals("")){
             ans[3] = fields[3].getText();
             email = fields[3].getText();
             nli[3] = true;
@@ -327,7 +328,7 @@ public class DBManager {
             phoneNumber = Integer.parseInt(fields[4].getText());
             nli[4] = true;
          }else{ans[4] = ""; nli[4] = false; checker = false;}
-         if (fields[5].getText() != null){
+         if (!fields[5].getText().equals("")){
             ans[5] = fields[5].getText();
             adress = fields[5].getText();
             nli[5] = true;
@@ -337,12 +338,12 @@ public class DBManager {
             postalCode = Integer.parseInt(fields[6].getText());
             nli[6] = true;
          }else{ans[6] = ""; nli[6] = false; checker = false;}
-         if (fields[7].getText() != null) {
+         if (!fields[7].getText().equals("")) {
             ans[7] = fields[7].getText();
             city = fields[7].getText();
             nli[7] = true;
          }else{ans[7] = ""; nli[7] = false; checker = false;}
-         if (fields[8].getText() != null) {
+         if (!fields[8].getText().equals("")) {
             ans[8] = fields[8].getText();
             password = fields[8].getText();
             nli[8] = true;
@@ -558,8 +559,7 @@ public class DBManager {
 	          ID = startID+"pay0" + counter;
 	       else
 	    	  ID = startID+ counter;
-	   
-	   
+
 	   return ID;
    }
    
