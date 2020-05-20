@@ -30,6 +30,8 @@ public class DBManager {
    int price = 0;
    String payType = "contract";
    String exDate = "";
+   
+   static Booking book;
 
    public static Connection conn = null;
    // Sökväg till SQLite-databas. OBS! Ändra sökväg så att den pekar ut din databas
@@ -52,6 +54,7 @@ public class DBManager {
 
       }
       
+      book = new Booking();
       
       DBManager men = new DBManager();
       men.updateDB();
@@ -66,7 +69,7 @@ public class DBManager {
 	   while (true){
 		 String[] options = {"Avsluta","Logga In","Våra Gym","Bli Medlem"};
          int x = JOptionPane.showOptionDialog(null, "Välkommen Till FitnessAB","Meny",
-                                              JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, null);
+                                              JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
          //Om man stänger rutan stängs programmet
          if (x == JOptionPane.CLOSED_OPTION){
                System.exit(0);
@@ -112,13 +115,9 @@ public class DBManager {
 	  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	      
 	  startDate = sdf.format(calendar.getTime());
-
-	  System.out.println(startDate);
 	   
 	  String result = "";
-      Boolean[] li = new Boolean[9];
-      Arrays.fill(li,Boolean.TRUE);
-      String[] ans = new String[9];
+      
 
       String[] options = {"Nästa","Tillbaka"};
       String[] choices = {
@@ -173,6 +172,7 @@ public class DBManager {
       }
       
       System.out.println(Integer.parseInt(memshipID.substring(memshipID.length()-1)));
+      
       if (Integer.parseInt(memshipID.substring(memshipID.length()-1)) == 3)
     	  calendar.add(Calendar.MONTH, 3);
       else if(Integer.parseInt(memshipID.substring(memshipID.length()-1)) == 6)
@@ -182,6 +182,10 @@ public class DBManager {
       
       endDate = sdf.format(calendar.getTime());
       System.out.println(startDate + " : " + endDate);
+      
+      Boolean[] li = new Boolean[9];
+      Arrays.fill(li,Boolean.TRUE);
+      String[] ans = new String[9];
       generateMemDialog(li, ans);
       
       memID = getID("Member");
@@ -214,20 +218,14 @@ public class DBManager {
    }
 
    public String LoggaIn() {
-	   String sql = "SELECT mail,password FROM Member";
-	   
+	   String sql = "SELECT mail,password,memID FROM Member";	   
 	   String result = "";
 	   Boolean wrong = false;
 	   Boolean checker = false;
 	   String[] results = new String[2];
-
-
-
+	   
 	   while(true) {
 		   results = generateLogInDialog(wrong,results);
-		   String sql2 = "SELECT endDate FROM Contract NATURAL JOIN Member WHERE mail = ";
-		   sql2 += "'" + results[0] + "'";
-		   System.out.println(sql2);
 		   try {
 	           Statement stmt  = conn.createStatement();
 	           ResultSet rs    = stmt.executeQuery(sql);
@@ -239,10 +237,9 @@ public class DBManager {
 	        	   		break;
 	        	   }
 	           }
-	           System.out.println(checker);
-
 	           if (checker) {
-	        	   result = "Välkommen";
+	        	   Member mem = new Member(rs.getString("memID"));
+	        	   book.menu(mem);
 	        	   break;
 	           }else {
 	        	   wrong = true;
@@ -258,7 +255,6 @@ public class DBManager {
 
    public void generateMemDialog(Boolean[] lis, String[] ans){
 
-
       JTextField[] fields = new JTextField[]{
       new JTextField(),
       new JTextField(),
@@ -268,7 +264,7 @@ public class DBManager {
       new JTextField(),
       new JTextField(),
       new JTextField(),
-      new JTextField()};
+      new JPasswordField()};
 
       Boolean checker = true;
 
@@ -318,12 +314,12 @@ public class DBManager {
             last_name = fields[2].getText();
             nli[2] = true;
          }else{ans[2] = ""; nli[2] = false; checker = false;}
-         if (!fields[3].getText().equals("")){
+         if (!fields[3].getText().equals("") && isValid(fields[3].getText())){
             ans[3] = fields[3].getText();
             email = fields[3].getText();
             nli[3] = true;
          }else{ans[3] = ""; nli[3] = false; checker = false;}
-         if (fields[4].getText() != null && fields[4].getText().matches("[0-9]+")){
+         if (fields[4].getText() != null && fields[4].getText().matches("[0-9]+") && fields[4].getText().length() <= 10 ){
             ans[4] = fields[4].getText();
             phoneNumber = Integer.parseInt(fields[4].getText());
             nli[4] = true;
@@ -333,7 +329,7 @@ public class DBManager {
             adress = fields[5].getText();
             nli[5] = true;
          }else{ans[5] = ""; nli[5] = false; checker = false;}
-         if (fields[6].getText() != null && fields[6].getText().matches("[0-9]+")){
+         if (fields[6].getText() != null && fields[6].getText().matches("[0-9]+") && fields[6].getText().length() == 5){
             ans[6] = fields[6].getText();
             postalCode = Integer.parseInt(fields[6].getText());
             nli[6] = true;
@@ -508,7 +504,7 @@ public class DBManager {
 	
 	   
 	   for (int i = 0;i<isOutdated.size(); i++) {
-		   String insertsql = "DELETE * FROM Member WHERE memID = '" + isOutdated.get(i) + "'";
+		   String insertsql = "DELETE FROM Member WHERE memID = '" + isOutdated.get(i) + "'";
 		   
 		   try {
 	           Statement stmt  = conn.createStatement();
@@ -613,5 +609,11 @@ public class DBManager {
 	   
 	   JOptionPane.showOptionDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,options[0]);
    }
-   
+      
+   //HÄMTAD KOD!!! 
+   //https://www.tutorialspoint.com/validate-email-address-in-java
+   static boolean isValid(String email) {
+	      String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+	      return email.matches(regex);
+	   }
 }
