@@ -1,4 +1,5 @@
 
+
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
@@ -35,11 +36,7 @@ public class DBManager {
 
    public static Connection conn = null;
    // Sökväg till SQLite-databas. OBS! Ändra sökväg så att den pekar ut din databas
-<<<<<<< HEAD
-   public static final String DB_URL = "jdbc:sqlite:/Users/Hanna/Group4/FitnessAB.sqlite";  
-=======
    public static final String DB_URL = "jdbc:sqlite:/Users/vincent/Desktop/Group4Java/FitnessAB.sqlite";
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
    // Namnet på den driver som används av java för att prata med SQLite
    public static final String DRIVER = "org.sqlite.JDBC";
 
@@ -51,15 +48,11 @@ public class DBManager {
          SQLiteConfig config = new SQLiteConfig();
          config.enforceForeignKeys(true);// Denna kodrad ser till att sätta databasen i ett läge där den ger felmeddelande ifall man bryter mot någon främmande-nyckel-regel
          conn = DriverManager.getConnection(DB_URL,config.toProperties());
-      }catch (Exception e) {
+         }catch (Exception e) {
             // Om java-progammet inte lyckas koppla upp sig mot databasen (t ex om fel sökväg eller om driver inte hittas) så kommer ett felmeddelande skrivas ut
          System.out.println( e.toString() );
          System.exit(0);
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
       }
       
       book = new Booking();
@@ -73,47 +66,19 @@ public class DBManager {
    }
 
    public void menu(){
-<<<<<<< HEAD
-      System.out.println(getNumOfRows("Member"));
-      
-      while (true){
-         String[] options = {"Avsluta","Logga In","Våra Gym","Boka Pass","Bli Medlem"};
-=======
 	   
 	   while (true){
 		 String[] options = {"Avsluta","Logga In","Våra Gym","Bli Medlem"};
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
          int x = JOptionPane.showOptionDialog(null, "Välkommen Till FitnessAB","Meny",
                                               JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
          //Om man stänger rutan stängs programmet
          if (x == JOptionPane.CLOSED_OPTION){
-            System.exit(0);
+               System.exit(0);
          }
 
          switch(x){
             case 3:
             //Bli Medlem
-<<<<<<< HEAD
-               JOptionPane.showMessageDialog(null,(BliMedlem()));
-               menu();
-               break;
-            case 3:
-            //Boka pass
-            
-               break;  
-            case 2:
-            //Våra Gym
-            
-               break;   
-            case 1:
-            //Logga In
-            
-               break;
-            case 0:
-            //Avsluta
-               System.exit(0);
-               break;    
-=======
             	JOptionPane.showMessageDialog(null,(BliMedlem()));
             	menu();
             break;
@@ -140,7 +105,6 @@ public class DBManager {
             //Avsluta
                System.exit(0);
          break;
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
          }
       }
    }
@@ -229,59 +193,14 @@ public class DBManager {
       paymentID = getID("Payment");
       System.out.println(paymentID);
       
-<<<<<<< HEAD
-      if (counter <10)
-         memID = "mem0000" + counter;
-      else if (counter <100)
-         memID = "mem000" + counter;
-      else if (counter <1000)
-         memID = "mem00" + counter;
-      else if (counter <10000)
-         memID = "mem0" + counter;
-      else
-         memID = "mem" + counter;
-=======
       calendar.add(Calendar.DAY_OF_MONTH, 14);
 	   
 	  exDate = sdf.format(calendar.getTime());
 	   
 	  System.out.println(exDate);
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
       
 
       System.out.println(memID);
-<<<<<<< HEAD
-   
-      try {
-         PreparedStatement pstmt = conn.prepareStatement(sql);
-         System.out.println("Funkar kung");
-            
-            
-            //Funkar allt ändrar jag frågetäcknena i sql-stringen(sql) till de som någon har matat in
-         pstmt.setObject(1, memID);
-         pstmt.setObject(2, new BigDecimal(PNR));
-         pstmt.setObject(3, first_name);
-         pstmt.setObject(4, last_name);
-         pstmt.setObject(5, email);
-         pstmt.setObject(6, phoneNumber);
-         pstmt.setObject(7, adress);
-         pstmt.setObject(8, postalCode);
-         pstmt.setObject(9, city);
-         pstmt.setObject(10, memshipID);
-         pstmt.setObject(11, password);
-            
-            
-         pstmt.executeUpdate();
-            //Det lyckades och då sätts stringen(result) som ska returnas till ett bekräftande
-         result = first_name + " " + last_name + " är tillagd.";           
-      }
-      catch (SQLException e){
-            //Det misslyckades och då sätts stringen(result) till felmeddelandet som kommer från sql
-         System.out.println(e.toString()); 
-         result = e.toString();
-      } 
-        
-=======
       Object[] memVal = {memID , PNR, first_name, last_name, email, phoneNumber, adress, postalCode, city, password, memshipID};
       Object[] conVal = {memID, memshipID, startDate, discount, endDate};
       Object[] payVal = {paymentID, payType, startDate, exDate, memID, price};
@@ -296,7 +215,6 @@ public class DBManager {
       else
     	  result = "Där uppstod ett problem med databasen försök igen eller kontakta kundservice.";
       
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
       return result;
    }
 
@@ -337,12 +255,7 @@ public class DBManager {
    }
 
    public void generateMemDialog(Boolean[] lis, String[] ans){
-<<<<<<< HEAD
-   
-      
-=======
 
-<<<<<<< HEAD
       JTextField[] fields = new JTextField[]{
       new JTextField(),
       new JTextField(),
@@ -354,21 +267,6 @@ public class DBManager {
       new JTextField(),
       new JPasswordField()};
 
-=======
-
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
-      JTextField[] fields = new JTextField[]{
-         new JTextField(),
-         new JTextField(),
-         new JTextField(),
-         new JTextField(),
-         new JTextField(),
-         new JTextField(),
-         new JTextField(),
-         new JTextField(),
-         new JTextField()};
-   
->>>>>>> a6fe9bd239dcfd1f92617583d38f4ace786f73d2
       Boolean checker = true;
 
       Object[] message = {
@@ -381,15 +279,9 @@ public class DBManager {
          "Postnummer:", fields[6],
          "Stad:", fields[7],
          "Lösenord:", fields[8],
-<<<<<<< HEAD
-         };
-      
-      
-=======
       };
 
 
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
       for(int n = 0, i = 0; i < lis.length; i ++, n += 2){
          if (lis[i] == false)
             message[n] = "<html><font color=#FF0000>" + message[n] + "</font>";
@@ -397,19 +289,11 @@ public class DBManager {
             fields[i].setText(ans[i]);
          }
       }
-<<<<<<< HEAD
-      
-   
-      int option = JOptionPane.showConfirmDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-      if (option == JOptionPane.CLOSED_OPTION)
-         menu();  
-=======
 
 
       int option = JOptionPane.showConfirmDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
       if (option == JOptionPane.CLOSED_OPTION)
           menu();
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
       if (option == JOptionPane.CANCEL_OPTION){
          menu();
       }
@@ -461,7 +345,7 @@ public class DBManager {
             password = fields[8].getText();
             nli[8] = true;
          }else{ans[8] = ""; nli[8] = false; checker = false;}
-      
+
       }
 
 
@@ -520,22 +404,6 @@ public class DBManager {
    }
 
    public int getNumOfRows(String table) {
-<<<<<<< HEAD
-      String sql = "select count(*) from "+ table;
-      int result = 0;
-      
-      try {
-         Statement stmt  = conn.createStatement();
-         ResultSet rs    = stmt.executeQuery(sql);
-         result = rs.getInt(1);
-       
-      }catch (SQLException e) {
-         System.out.println("Funkar ej");
-         System.out.println(e.getMessage());
-      }
-   
-      return result;
-=======
 	   String sql = "select count(*) from "+ table;
 	   int result = 0;
 
@@ -550,7 +418,6 @@ public class DBManager {
 	   }
 
 	   return result;
->>>>>>> b5a6ebc4dbc89eba76662307caef4ffc60998799
    }
 
    public Boolean insertToDB(String table, Object[] values) {
