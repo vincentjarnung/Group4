@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -80,8 +82,8 @@ public class Booking {
 	public void BokaPass(Member m) {
 		
 		ArrayList<String> values = new ArrayList<String>();
-
-		values = getGroupTraining(m,"",true);
+		String sqlMem = "SELECT GroupTraining.name,trainType.name,beginTime,endTime,Instructor.first_name,Instructor.last_name,Gym.name,Room.name,capacity,GroupTraining.groupTrainID FROM GroupTraining INNER JOIN Room ON Room.roomID = GroupTraining.roomID INNER JOIN Gym ON Gym.gymID = Room.gymID INNER JOIN Instructor ON Instructor.employeeID = GroupTraining.employeeID INNER JOIN trainType ON trainType.trainTypeID = GroupTraining.trainTypeID INNER JOIN BookingGroupTraining ON BookingGroupTraining.groupTrainID = GroupTraining.groupTrainID WHERE memID = '" + m.memID + "'";
+		values = getGroupTraining(sqlMem);
 		JLabel l1= new JLabel("DINA PASS");
 		l1.setFont(new Font("Arial", Font.BOLD, 20));
 			Object[] message = {l1,"\n",generatePanel(m,values,false)};
@@ -97,14 +99,18 @@ public class Booking {
 	        else if(option == 1) {
 	        	menu(m);
 	        }else if(option == 0) {
-	        	HittaPass(m);
+	        	HittaPass(m,"","");
 	        }
 	        
 	}
 	
-	public void HittaPass(Member m) {
+	public void HittaPass(Member m,String filters, String currentFilter) {
+			Date d = new Date();
+			LocalDate ld = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			//Copyright 2004 Juan Heyns. All rights reserved.
         	UtilDateModel model = new UtilDateModel();
+        	model.setDate(ld.getYear(), ld.getMonthValue()-1, ld.getDayOfMonth());
+        	model.setSelected(true);
     		DateLabelFormatter dlf = new DateLabelFormatter();
     		Properties p = new Properties();
     		p.put("text.today", "Today");
@@ -113,14 +119,17 @@ public class Booking {
     		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
     		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel,dlf);
     		
-    		String[] choices = {"Hitta Pass","Tillbaka"};
+    		String[] choices = {"Hitta Pass","Filtrera","Tillbaka"};
     		JLabel l1= new JLabel("HITTA PASS");
-    		l1.setFont(new Font("Arial", Font.BOLD, 18));
-    		Object[] finalMes = {l1,"\n",datePicker};
+    		l1.setFont(new Font("Arial", Font.BOLD, 16));
+    		
+    		JLabel l2= new JLabel("Filter: " +  currentFilter);
+    		l2.setFont(new Font("Arial", Font.BOLD, 14));
+    		Object[] finalMes = {l1,l2,"\n",datePicker};
     		
     		System.out.println(dlf);
-    		int n = JOptionPane.showOptionDialog(null,finalMes,"Bokade Pass",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
-    		if(n == 1)
+    		int n = JOptionPane.showOptionDialog(null,finalMes,"Boka Pass",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
+    		if(n == 2)
     			BokaPass(m);
     		else if(n == -1)
     			menu(m);	
@@ -133,37 +142,127 @@ public class Booking {
 		   				final JDialog dialog = new JDialog();
 		   				dialog.setAlwaysOnTop(true);  
 		   				JOptionPane.showMessageDialog(dialog, "Välj Ett Datum!");
-		   				HittaPass(m);
+		   				HittaPass(m,filters,currentFilter);
     				}
 		    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		    		String date = sdf.format(selectedDate);
+		    		String sqlDate = "SELECT GroupTraining.name,trainType.name,beginTime,endTime,Instructor.first_name,Instructor.last_name,Gym.name,Room.name,capacity,GroupTraining.groupTrainID FROM GroupTraining INNER JOIN Room ON Room.roomID = GroupTraining.roomID INNER JOIN Gym ON Gym.gymID = Room.gymID INNER JOIN Instructor ON Instructor.employeeID = GroupTraining.employeeID INNER JOIN trainType ON trainType.trainTypeID = GroupTraining.trainTypeID WHERE GroupTraining.date='" + date + "'" + filters;
 		    		System.out.println(date);
-		   			Object[] panels = generatePanel(m,getGroupTraining(m,date, false),true);
-		   			Object[] dateMes = {l1,"\n",datePicker, panels};
-		   			int i = JOptionPane.showOptionDialog(null,dateMes,"Bokade Pass",JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
+		   			Object[] panels = generatePanel(m,getGroupTraining(sqlDate),true);
+		   			Object[] dateMes = {l1,l2,"\n",datePicker, panels};
+		   			System.out.println(sqlDate);
+		   			int i = JOptionPane.showOptionDialog(null,dateMes,"Boka Pass",JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
 		   			System.out.println(i);
 	    			if (i == -1) {
 	    				menu(m);
-	    				break;}
-		    		else if (i == 1) {
+	    				break;
+	    			}else if(i == 1) {
+	    				Filtrera(m);
+	    			}
+		    		else if (i == 2) {
 		    			BokaPass(m);
 		    			break;
-		    			}
+		    		}
 	    		}	
 	    	}
+    		else if(n == 1) {
+    			Filtrera(m);
+    		}
+    		
 	}
-
+	public void Filtrera(Member m) {
+		String filters = "";
+		String currentFilters = "";
+		String[] options = {"Sök Pass","Återställ","Tillbaka"};
+		String[] gymChoices = {
+				  "Alla gym",
+	    		  "Björkvägen", 
+	    		  "Aspvägen", 
+	    		  "Ekdalen"	  
+	    };
+		String[] typChoices = {
+	    		  "Alla pass",
+				  "Styrka", 
+	    		  "Kondtion", 
+	    		  "Yoga",
+	    		  "Stretch",
+	    		  "Fit på 15"
+		};
+		String[] empChoices = {
+				  "Alla instruktörer",
+	    		  "Lisa Vanderpump", 
+	    		  "Lisa Rinna", 
+	    		  "NeNe Leakes",
+	    		  "Ramona Singer",
+	    		  "Erika Jayne"
+			};
+		
+		JComboBox<String> gcb = new JComboBox<String>(gymChoices);
+		JComboBox<String> tcb = new JComboBox<String>(typChoices);
+		JComboBox<String> ecb = new JComboBox<String>(empChoices);
+		
+		Object[] mes = {gcb,tcb,ecb};
+		
+		int i = JOptionPane.showOptionDialog(null,mes,"Boka Pass",JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
+		if (i == 0) {
+			if(gcb.getSelectedIndex() == 1) {
+				filters += " AND Gym.gymID = 'gym01'";
+				currentFilters += "Björkvägen ";
+			}else if(gcb.getSelectedIndex() == 2){
+				filters += " AND Gym.gymID = 'gym02'";
+				currentFilters += "Aspvägen ";
+			}else if(gcb.getSelectedIndex() == 3){
+				filters += " AND Gym.gymID = 'gym03'";
+				currentFilters += "Ekdalen ";
+			}
+			if(tcb.getSelectedIndex() == 1){
+				filters += " AND trainType.trainTypeID = 'ttype01'";
+				currentFilters += "Styrka ";
+			}else if(tcb.getSelectedIndex() == 2){
+				filters += " AND trainType.trainTypeID = 'ttype02'";
+				currentFilters += "Kondition ";
+			}else if(tcb.getSelectedIndex() == 3){
+				filters += " AND trainType.trainTypeID = 'ttype03'";
+				currentFilters += "Yoga ";
+			}else if(tcb.getSelectedIndex() == 4){
+				filters += " AND trainType.trainTypeID = 'ttype04'";
+				currentFilters += "Stretch ";
+			}else if(tcb.getSelectedIndex() == 5){
+				filters += " AND trainType.trainTypeID = 'ttype05'";
+				currentFilters += "Fit på 15 ";
+			}
+			if(ecb.getSelectedIndex() == 1){
+				filters += " AND Instructor.employeeID = 'emp01'";
+				currentFilters += "Lisa Vanderpump ";
+			}else if(ecb.getSelectedIndex() == 2){
+				filters += " AND Instructor.employeeID = 'emp02'";
+				currentFilters += "Lisa Rinna ";
+			}else if(ecb.getSelectedIndex() == 3){
+				filters += " AND Instructor.employeeID = 'emp03'";
+				currentFilters += "NeNe Leakes ";
+			}else if(ecb.getSelectedIndex() == 4){
+				filters += " AND Instructor.employeeID = 'emp04'";
+				currentFilters += "Ramona Singer ";
+			}else if(ecb.getSelectedIndex() == 5){
+				filters += " AND Instructor.employeeID = 'empo5'";
+				currentFilters += "Erika Jayne ";
+			}
+			System.out.println(filters);
+			HittaPass(m,filters,currentFilters);
+		}else if(i == 1){
+			Filtrera(m);
+		}else if(i == 2){
+			HittaPass(m,"","");
+		}else if(i == -1){
+			menu(m);
+		}
+	}
 	
-	public ArrayList<String> getGroupTraining(Member m, String date, Boolean dif) {
-		String sql = "SELECT GroupTraining.name,trainType.name,beginTime,endTime,Instructor.first_name,Instructor.last_name,Gym.name,Room.name,capacity,bookedMems FROM GroupTraining INNER JOIN Room ON Room.roomID = GroupTraining.roomID INNER JOIN Gym ON Gym.gymID = Room.gymID INNER JOIN Instructor ON Instructor.employeeID = GroupTraining.employeeID INNER JOIN trainType ON trainType.trainTypeID = GroupTraining.trainTypeID INNER JOIN BookingGroupTraining ON BookingGroupTraining.groupTrainID = GroupTraining.groupTrainID WHERE memID = '" + m.memID + "'";
-		String sql1 = "SELECT GroupTraining.name,trainType.name,beginTime,endTime,Instructor.first_name,Instructor.last_name,Gym.name,Room.name,capacity FROM GroupTraining INNER JOIN Room ON Room.roomID = GroupTraining.roomID INNER JOIN Gym ON Gym.gymID = Room.gymID INNER JOIN Instructor ON Instructor.employeeID = GroupTraining.employeeID INNER JOIN trainType ON trainType.trainTypeID = GroupTraining.trainTypeID WHERE GroupTraining.date = '" + date + "'";;
+	public ArrayList<String> getGroupTraining(String sql) {
+		int memBooked;
 		ArrayList<String> values = new ArrayList<String>();
 		 try {
-	           Statement stmt  = DBManager.conn.createStatement();
-	           
-	           if(!dif) {
-	        	   sql = sql1;
-	           }
+	           Statement stmt  = DBManager.conn.createStatement();    
 	           ResultSet rs    = stmt.executeQuery(sql);
 	        	    
 	           while(rs.next()) {
@@ -175,8 +274,18 @@ public class Booking {
 		       		values.add(rs.getString(6));//Instruktör efternamn
 		       		values.add(rs.getString(7));;//Gym namn
 		       		values.add(rs.getString(8));//Rum namn
-		       		values.add(rs.getString(9));//Platser kvar
 		       		
+		       		String sqlCount = "SELECT count(*) FROM BookingGroupTraining WHERE groupTrainID = '" + rs.getString(10) + "'";
+		       		try {
+		       			Statement stmtCount = DBManager.conn.createStatement();
+		       			ResultSet rsCount = stmtCount.executeQuery(sqlCount);
+		       			memBooked = rsCount.getInt(1);
+		       		}finally {
+		       			System.out.print(false);
+		       		}
+		       		
+		       		values.add(rs.getInt(9)-memBooked + "");//Platser kvar
+		       		values.add(rs.getString(9));
 	           }    
 
 		   }catch (SQLException e) {
@@ -206,12 +315,12 @@ public class Booking {
 		int counter = values.size()/9;
 		Object[] message = new Object[counter];
 		
-		for (int i = 0,n = 0; i<counter; i++, n+= 8) {
+		for (int i = 0,n = 0; i<counter; i++, n+= 9) {
 			String trainName = values.get(i+n);
 			JLabel label1 = new JLabel(values.get(i+n) + " | " + values.get(i+1+n));
 			JLabel label2 = new JLabel(values.get(i+2+n) + "-" + values.get(i+3+n) +  "|" + values.get(i+4+n) + " " + values.get(i+5+n));
 			JLabel label3 = new JLabel(values.get(i+6+n) + " | " + values.get(i+7+n));
-			JLabel label4 = new JLabel(values.get(i+8+n) + " Lediga platser");
+			JLabel label4 = new JLabel(values.get(i+8+n) + " lediga platser av " + values.get(i+9+n));
 			JPanel panel = new JPanel(new GridBagLayout());
 			panel.setBackground(Color.white);
 			GridBagConstraints constraints = new GridBagConstraints();
@@ -303,6 +412,7 @@ public class Booking {
 			pstmt.setString(1,m.memID);
 			pstmt.setString(2,trainName);
 			pstmt.executeUpdate();
+			
 			final JDialog dialog = new JDialog();
 			dialog.setAlwaysOnTop(true);  
 			JOptionPane.showMessageDialog(dialog, "Passet är bokat!");
