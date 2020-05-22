@@ -305,18 +305,34 @@ public class Booking {
 	        	   name.add(rs.getString(1)); //Namn
 	        	   rs.getString(2); //url
 	        	   rs.getString(3); //Beskrivning
+	        	   rs.getString(4); //ID
 	           }
 		   }catch (SQLException e) {
 			   System.out.println("Funkar ej");
 			   System.out.println(e.getMessage());
 		   }
 		 String[] names = new String[name.size()];
-		 
-		 for(int i = 0; i<names.length;i++)
+		
+		 for(int i = 0; i<name.size();i++)
 			 names[i] = name.get(i);
 		 
-		 JOptionPane.showOptionDialog(null,"Välj typ av träning","Online Träning",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, names, null);
+		 JButton b1;
+		 for(int n = 0; n<names.length;n++)
+			 b1 = new JButton(names[n]);
 		 
+		 
+		 int n = JOptionPane.showOptionDialog(null,"Välj typ av träning","Online Träning",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, names, null);
+		 if (n == names.length-1) {
+			 OnlineTräning(m);
+		 }else if(n == names.length-2) {
+			 
+		 }else if(n == names.length-2) {
+			 
+		 }else if(n == names.length-2) {
+			 
+		 }else if(n == names.length-2) {
+			 
+		 }
 	}
 	
 	
@@ -470,7 +486,7 @@ public class Booking {
 	}
 
 	public void OnlineTräning(Member m) {
-		String sql = "SELECT videoName,urlVideo,description FROM OnlineTraining WHERE = ";
+		String sql = "SELECT videoName,urlVideo,description,onlineTrainID FROM OnlineTraining WHERE trainTypeID = ";
 		String[] choices = {"Tillbaka","Fit på 15","Stretch","Yoga","Kondition","Styrka"};
 		
 		int n = JOptionPane.showOptionDialog(null,"Välj typ av träning","Online Träning",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
