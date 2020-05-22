@@ -69,7 +69,7 @@ public class Booking {
 	            break;
 	            case 1:
 	            //Online Träning
-	            
+	            	OnlineTräning(m);
 	            break;
 	            case 0:
 	            //Logga Ut
@@ -295,20 +295,30 @@ public class Booking {
 		return values;
 	}
 	
-	public void getOnlineTraing(Member m) {
-		String sql = "SELECT * FROM OnlineTraining WHERE memID = '" + m.memID + "'";
+	public void getOnlineTraining(Member m, String sql) {
+		ArrayList<String> name = new ArrayList<String>();
 		
 		 try {
 	           Statement stmt  = DBManager.conn.createStatement();
 	           ResultSet rs    = stmt.executeQuery(sql);
-	           
-
+	           while(rs.next()) {
+	        	   name.add(rs.getString(1)); //Namn
+	        	   rs.getString(2); //url
+	        	   rs.getString(3); //Beskrivning
+	           }
 		   }catch (SQLException e) {
 			   System.out.println("Funkar ej");
 			   System.out.println(e.getMessage());
 		   }
-		
+		 String[] names = new String[name.size()];
+		 
+		 for(int i = 0; i<names.length;i++)
+			 names[i] = name.get(i);
+		 
+		 JOptionPane.showOptionDialog(null,"Välj typ av träning","Online Träning",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, names, null);
+		 
 	}
+	
 	
 	public Object[] generatePanel(Member m,ArrayList<String> values,Boolean book) {
 		
@@ -427,6 +437,7 @@ public class Booking {
 
 	
 	public void Profil(Member m) {
+
 		String[] choices = {"Tillbaka","Avsluta Medlemskap","Betalningshistorik","Ändra Uppgifter","Träningshistorik","Mina Bokade Pass"};
 		
 		int n = JOptionPane.showOptionDialog(null, m.first_name + " " + m.last_name,"Profil",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
@@ -457,6 +468,47 @@ public class Booking {
       		break;
       } 
 	}
+
+	public void OnlineTräning(Member m) {
+		String sql = "SELECT videoName,urlVideo,description FROM OnlineTraining WHERE = ";
+		String[] choices = {"Tillbaka","Fit på 15","Stretch","Yoga","Kondition","Styrka"};
+		
+		int n = JOptionPane.showOptionDialog(null,"Välj typ av träning","Online Träning",JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
+		
+		switch(n){ 
+  		case 5:
+  			//Styrka
+  			sql += "'ttype01'";
+  			getOnlineTraining(m,sql);
+  		break;		
+  		case 4:
+  			//Trän
+  			sql += "'ttype02'";
+  			getOnlineTraining(m,sql);
+  		break;
+  		case 3:
+  			//Ändra uppgifter
+  			sql += "'ttype03'";
+  			getOnlineTraining(m,sql);
+  		break;
+  		case 2:
+  			//Betalningshistorik
+  			sql += "'ttype04'";
+  			getOnlineTraining(m,sql);
+  		break;
+  		case 1:
+  			//AvslutaMedlemskap
+  			sql += "'ttype05'";
+  			getOnlineTraining(m,sql);
+  		break;
+  		case 0:
+  			//Tillbaka
+  			menu(m);
+  		break;
+  } 
+	}
+	
+
 }
 
 
