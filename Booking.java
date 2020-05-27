@@ -304,6 +304,7 @@ public class Booking {
 				       		
 				       		values.add(rs.getInt(9)-memBooked + "");//Platser kvar
 				       		values.add(rs.getString(9));
+				       		System.out.println(values);
 			        	}
 		        	}else {
 		        		if (trainDate.before(today)) {
@@ -442,7 +443,8 @@ public class Booking {
 	
 	public Object[] generatePanel(Member m,ArrayList<String> values,Boolean book) {
 		
-		int counter = values.size()/9;
+		int counter = values.size()/10;
+		System.out.println(counter);
 		Object[] message = new Object[counter];
 		
 		for (int i = 0,n = 0; i<counter; i++, n+= 9) {
@@ -460,7 +462,6 @@ public class Booking {
 	        constraints.gridx = 0;
 	        constraints.gridy = 0; 
 	        panel.add(label1, constraints);
-	        System.out.println(label1.getY());
 	        
 	        constraints.gridy = 1;
 	        panel.add(label2, constraints);
