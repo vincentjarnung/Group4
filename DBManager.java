@@ -1,10 +1,15 @@
 
 
 
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import java.util.*;
 import java.util.Date;
 
@@ -571,20 +576,23 @@ public class DBManager {
 	   ArrayList<String> roomInfo = new ArrayList<String>();
 	   ArrayList<String> machineInfo = new ArrayList<String>();
 	   ArrayList<String> weightInfo = new ArrayList<String>();
+	   roomInfo.add("<html> Rum: <br> ");
+	   machineInfo.add("<html> Maskiner: <br> ");
+	   weightInfo.add("<html> Vikter: <br> ");
 	   String openingHours = "";
 	   try {
            Statement stmt  = conn.createStatement();
            ResultSet rs    = stmt.executeQuery(roomSql);
            while(rs.next()) {
-        	   roomInfo.add(rs.getString(1) + " med " + rs.getString(2) + " platser\n" );
+        	   roomInfo.add(rs.getString(1) + " med " + rs.getString(2) + " platser <br> " );
            }
            rs    = stmt.executeQuery(machineSql);
            while(rs.next()) {
-        	   machineInfo.add(rs.getString(1) + "där man tränar " + rs.getString(2) + "\n");
+        	   machineInfo.add(rs.getString(1) + "där man tränar " + rs.getString(2) + " <br> ");
            }
            rs    = stmt.executeQuery(weightSql);
            while(rs.next()) {
-        	   weightInfo.add(rs.getString(1) + " " + rs.getString(2) + "kg\n");
+        	   weightInfo.add(rs.getString(1) + " " + rs.getString(2) + "kg " + rs.getString(2) + " stycken <br> ");
            }
            rs    = stmt.executeQuery(openingHoursSql);
            openingHours = rs.getString(1);
@@ -592,6 +600,10 @@ public class DBManager {
 		   System.out.println("Funkar ej");
 		   System.out.println(e.getMessage());
 	   }
+	   
+	   roomInfo.add(" </html>");
+	   machineInfo.add(" </html>");
+	   weightInfo.add(" </html>");
 	   StringBuilder builder1 = new StringBuilder();
 	   for (String value : roomInfo) {
 	       builder1.append(value);
@@ -611,10 +623,37 @@ public class DBManager {
 	   String weighttext = builder3.toString();
 	   
 	   
+	   
+	   JLabel roomL = new JLabel(roomtext);
+	   JLabel machineL = new JLabel(machinetext);
+	   JLabel weightL = new JLabel(weighttext);
+	   JLabel openHoursL = new JLabel(openingHours);
+	   
+	   GridBagConstraints constraints = new GridBagConstraints();
+	   constraints.anchor = GridBagConstraints.NORTHWEST;
+	   JPanel panel = new JPanel();
+
+	   panel.setLayout(new GridBagLayout());
+	   constraints.gridx = 0;
+       constraints.gridy = 0; 
+	   panel.add(roomL,constraints);
+	   constraints.gridx = 1;
+	   panel.add(Box.createHorizontalStrut(20),constraints);
+	   constraints.gridx = 2;
+	   panel.add(machineL,constraints);
+	   constraints.gridx = 3;
+	   panel.add(Box.createHorizontalStrut(20),constraints);
+	   constraints.gridx = 4;
+	   panel.add(weightL,constraints);
+	   constraints.gridx = 5;
+	   panel.add(Box.createHorizontalStrut(20),constraints);
+	   constraints.gridx = 6;
+	   panel.add(openHoursL,constraints);
+	   
 	   Object[] message = {"Rum: \n", roomtext, "\nMaskiners: \n", machinetext, "\nVikter: \n", weighttext, "\nÖppetider: \n", openingHours};
 	   String[] options = {"Tillbaka"};
 	   
-	   int n = JOptionPane.showOptionDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,null);
+	   int n = JOptionPane.showOptionDialog(null, panel,"Skriv in dina uppgifer!", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,null);
 	   
 	   if (n == 0) {
 		   ourGym();

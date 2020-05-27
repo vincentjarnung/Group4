@@ -409,9 +409,9 @@ public class Booking {
 			}
 			
 			if (review >0 && review <6) {
-				sql = "INSERT INTO OnlineTrainingRecord VALUES ('" + m.memID + "',(SELECT onlineTrainID FROM onlineTraining where videoName = '" + videoName + "'),0,"+ review +")";
+				sql = "INSERT INTO OnlineTrainingRecord VALUES ('" + m.memID + "',(SELECT onlineTrainID FROM onlineTraining where videoName = '" + videoName + "'),"+ review +")";
 			}else {
-				sql = "INSERT INTO OnlineTrainingRecord (memID,onlineTrainID,memView) VALUES ('" + m.memID + "',(SELECT onlineTrainID FROM onlineTraining where videoName = '" + videoName + "'),0)";
+				sql = "INSERT INTO OnlineTrainingRecord (memID,onlineTrainID,memView) VALUES ('" + m.memID + "',(SELECT onlineTrainID FROM onlineTraining where videoName = '" + videoName + "'))";
 			}
 			try {
 				PreparedStatement pstmt = DBManager.conn.prepareStatement(sql);
