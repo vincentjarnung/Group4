@@ -1,5 +1,6 @@
 
 
+
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
@@ -29,14 +30,14 @@ public class DBManager {
    
    String paymentID = "";
    int price = 0;
-   String payType = "contract";
+   String payType = "Autogiro";
    String exDate = "";
    
    static Booking book;
 
    public static Connection conn = null;
    // Sökväg till SQLite-databas. OBS! Ändra sökväg så att den pekar ut din databas
-   public static final String DB_URL = "jdbc:sqlite:/Users/Hanna/Desktop/Projekt/Group4/FitnessAB.sqlite";
+   public static final String DB_URL = "jdbc:sqlite:/Users/vincent/Desktop/Group4Java/FitnessAB.sqlite";
    // Namnet på den driver som används av java för att prata med SQLite
    public static final String DRIVER = "org.sqlite.JDBC";
 
@@ -84,17 +85,7 @@ public class DBManager {
             break;
             case 2:
             //Våra Gym
-            	String[] option = {"Ekdalen","Aspvägen","Björkvägen"};
-            	int choice = JOptionPane.showOptionDialog(null, "Välj Gym","Våra Gym",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, null);
-            	if (choice == 2)
-            		gymInfo("gym01");
-            	else if (choice == 1)
-            		gymInfo("gym02");
-            	else if (choice == 2)
-            		gymInfo("gym03");
-            	else if (choice == JOptionPane.CLOSED_OPTION)
-            		menu();
+            	ourGym();
             break;
             case 1:
             //Logga In
@@ -560,13 +551,27 @@ public class DBManager {
 	   return ID;
    }
    
+   public void ourGym(){
+	   String[] option = {"Tillbaka","Ekdalen","Aspvägen","Björkvägen"};
+   	int choice = JOptionPane.showOptionDialog(null, "Välj Gym","Våra Gym",
+               JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, option, null);
+   	if (choice == 3)
+   		gymInfo("gym01");
+   	else if (choice == 2)
+   		gymInfo("gym02");
+   	else if (choice == 1)
+   		gymInfo("gym03");
+   }
+   
    public void gymInfo(String gymID) {
 	   String roomSql = "SELECT Room.name, capacity FROM Gym INNER JOIN Room ON Gym.gymID = Room.gymID where Gym.gymID = '" + gymID + "'";
 	   String machineSql = "SELECT Machine.name, trainArea  FROM Gym INNER JOIN Machine ON Gym.gymID = Machine.gymID where Gym.gymID = '" + gymID + "'";
 	   String weightSql = "SELECT Weight.name, weight FROM Gym INNER JOIN Weight ON Gym.gymID = Weight.gymID where Gym.gymID = '" + gymID + "'";
+	   String openingHoursSql = "SELECT openingHours FROM Gym where Gym.gymID = '" + gymID + "'";
 	   ArrayList<String> roomInfo = new ArrayList<String>();
 	   ArrayList<String> machineInfo = new ArrayList<String>();
 	   ArrayList<String> weightInfo = new ArrayList<String>();
+	   String openingHours = "";
 	   try {
            Statement stmt  = conn.createStatement();
            ResultSet rs    = stmt.executeQuery(roomSql);
@@ -581,7 +586,8 @@ public class DBManager {
            while(rs.next()) {
         	   weightInfo.add(rs.getString(1) + " " + rs.getString(2) + "kg\n");
            }
-
+           rs    = stmt.executeQuery(openingHoursSql);
+           openingHours = rs.getString(1);
 	   }catch (SQLException e) {
 		   System.out.println("Funkar ej");
 		   System.out.println(e.getMessage());
@@ -605,12 +611,17 @@ public class DBManager {
 	   String weighttext = builder3.toString();
 	   
 	   
-	   Object[] message = {"Rooms: \n", roomtext, "\nMachines: \n", machinetext, "\nWeights: \n", weighttext};
+	   Object[] message = {"Rum: \n", roomtext, "\nMaskiners: \n", machinetext, "\nVikter: \n", weighttext, "\nÖppetider: \n", openingHours};
 	   String[] options = {"Tillbaka"};
 	   
-	   JOptionPane.showOptionDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,options[0]);
+	   int n = JOptionPane.showOptionDialog(null, message,"Skriv in dina uppgifer!", JOptionPane.CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,null);
+	   
+	   if (n == 0) {
+		   ourGym();
+	   }
    }
       
+   
    //HÄMTAD KOD!!! 
    //https://www.tutorialspoint.com/validate-email-address-in-java
    static boolean isValid(String email) {
