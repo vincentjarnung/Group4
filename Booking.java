@@ -163,6 +163,7 @@ public class Booking {
     		}
     		
 	}
+	
 	public void Filtrera(Member m) {
 		String filters = "";
 		String currentFilters = "";
@@ -535,7 +536,7 @@ public class Booking {
 	
 	public void BokaEttPass(Member m, String trainName) {
 		
-		String SQL = "INSERT INTO BookingGroupTraining VALUES(?,(SELECT groupTrainID FROM GroupTraining where name = ?),5)";
+		String SQL = "INSERT INTO BookingGroupTraining VALUES(?,(SELECT groupTrainID FROM GroupTraining where name = ?))";
 		try {
 			PreparedStatement pstmt = DBManager.conn.prepareStatement(SQL);
 			System.out.println(m.memID + " och " + trainName);
