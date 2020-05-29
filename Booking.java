@@ -287,12 +287,14 @@ public class Booking {
 	
 			           		values.add(rs.getString(1));//Namn
 				       		values.add(rs.getString(2));//Träningstyp
+				       		values.add(rs.getString(11));//Datum
 				       		values.add(rs.getString(3));//Starttid
 				       		values.add(rs.getString(4));//Sluttid
 				       		values.add(rs.getString(5));//Instruktör förnamn
 				       		values.add(rs.getString(6));//Instruktör efternamn
-				       		values.add(rs.getString(7));;//Gym namn
+				       		values.add(rs.getString(7));//Gym namn
 				       		values.add(rs.getString(8));//Rum namn
+				       		
 				       		
 				       		String sqlCount = "SELECT count(*) FROM BookingGroupTraining WHERE groupTrainID = '" + rs.getString(10) + "'";
 				       		try {
@@ -305,6 +307,7 @@ public class Booking {
 				       		
 				       		values.add(rs.getInt(9)-memBooked + "");//Platser kvar
 				       		values.add(rs.getString(9));
+				       		values.add(rs.getString(10));//GroupTrainID
 				       		System.out.println(values);
 			        	}
 		        	}else {
@@ -312,12 +315,14 @@ public class Booking {
 		        			
 			           		values.add(rs.getString(1));//Namn
 				       		values.add(rs.getString(2));//Träningstyp
+				       		values.add(rs.getString(11));//Datum
 				       		values.add(rs.getString(3));//Starttid
 				       		values.add(rs.getString(4));//Sluttid
 				       		values.add(rs.getString(5));//Instruktör förnamn
 				       		values.add(rs.getString(6));//Instruktör efternamn
-				       		values.add(rs.getString(7));;//Gym namn
+				       		values.add(rs.getString(7));//Gym namn
 				       		values.add(rs.getString(8));//Rum namn
+				       		
 				       		
 				       		String sqlCount = "SELECT count(*) FROM BookingGroupTraining WHERE groupTrainID = '" + rs.getString(10) + "'";
 				       		try {
@@ -330,6 +335,7 @@ public class Booking {
 				       		
 				       		values.add(rs.getInt(9)-memBooked + "");//Platser kvar
 				       		values.add(rs.getString(9));
+				       		values.add(rs.getString(10));//GroupTrainID
 		        		}
 		        	}
 	           }
@@ -444,16 +450,17 @@ public class Booking {
 	
 	public Object[] generatePanel(Member m,ArrayList<String> values,Boolean book) {
 		
-		int counter = values.size()/10;
+		int counter = values.size()/12;
 		System.out.println(counter);
 		Object[] message = new Object[counter];
 		
-		for (int i = 0,n = 0; i<counter; i++, n+= 9) {
-			String trainName = values.get(i+n);
-			JLabel label1 = new JLabel(values.get(i+n) + " | " + values.get(i+1+n));
-			JLabel label2 = new JLabel(values.get(i+2+n) + "-" + values.get(i+3+n) +  "|" + values.get(i+4+n) + " " + values.get(i+5+n));
-			JLabel label3 = new JLabel(values.get(i+6+n) + " | " + values.get(i+7+n));
-			JLabel label4 = new JLabel(values.get(i+8+n) + " lediga platser av " + values.get(i+9+n));
+		for (int i = 0,n = 0; i<counter; i++, n+= 11) {
+			
+			JLabel label1 = new JLabel(values.get(i+n) + " | " + values.get(i+1+n) + " | " + values.get(i+2+n) );
+			JLabel label2 = new JLabel(values.get(i+3+n) + "-" + values.get(i+4+n) +  "|" + values.get(i+5+n) + " " + values.get(i+6+n));
+			JLabel label3 = new JLabel(values.get(i+7+n) + " | " + values.get(i+8+n));
+			JLabel label4 = new JLabel(values.get(i+9+n) + " lediga platser av " + values.get(i+10+n));
+			String trainName = values.get(i+n+11);
 			JPanel panel = new JPanel(new GridBagLayout());
 			panel.setBackground(Color.white);
 			GridBagConstraints constraints = new GridBagConstraints();
@@ -513,15 +520,15 @@ public class Booking {
         
 	}
 	
-	public void AvbokaPass(Member m, String trainName) {
+	public void AvbokaPass(Member m, String groupTrainID) {
 
-		String SQL = "DELETE FROM BookingGroupTraining WHERE memID = ? AND groupTrainID = (SELECT groupTrainID FROM GroupTraining where name = ?)";
+		String SQL = "DELETE FROM BookingGroupTraining WHERE memID = ? AND groupTrainID = ?";
 		try {
 			
 			PreparedStatement pstmt = DBManager.conn.prepareStatement(SQL);
-			System.out.println(m.memID + " och " + trainName);
+			System.out.println(m.memID + " och " + groupTrainID);
 			pstmt.setString(1,m.memID);
-			pstmt.setString(2,trainName);
+			pstmt.setString(2,groupTrainID);
 			pstmt.executeUpdate();
 			
 			final JDialog dialog = new JDialog();
@@ -534,14 +541,14 @@ public class Booking {
 		    }
 	}
 	
-	public void BokaEttPass(Member m, String trainName) {
+	public void BokaEttPass(Member m, String groupTrainID) {
 		
-		String SQL = "INSERT INTO BookingGroupTraining VALUES(?,(SELECT groupTrainID FROM GroupTraining where name = ?))";
+		String SQL = "INSERT INTO BookingGroupTraining VALUES(?,?)";
 		try {
 			PreparedStatement pstmt = DBManager.conn.prepareStatement(SQL);
-			System.out.println(m.memID + " och " + trainName);
+			System.out.println(m.memID + " och " + groupTrainID);
 			pstmt.setString(1,m.memID);
-			pstmt.setString(2,trainName);
+			pstmt.setString(2,groupTrainID);
 			pstmt.executeUpdate();
 			
 			final JDialog dialog = new JDialog();

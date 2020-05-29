@@ -42,7 +42,7 @@ public class DBManager {
 
    public static Connection conn = null;
    // Sökväg till SQLite-databas. OBS! Ändra sökväg så att den pekar ut din databas
-   public static final String DB_URL = "jdbc:sqlite:/Users/Hanna/Desktop/Projekt/Group4/FitnessAB.sqlite";
+   public static final String DB_URL = "jdbc:sqlite:/Users/vincent/Desktop/Group4Java/FitnessAB.sqlite";
    // Namnet på den driver som används av java för att prata med SQLite
    public static final String DRIVER = "org.sqlite.JDBC";
 
