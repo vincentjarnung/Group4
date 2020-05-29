@@ -602,27 +602,27 @@ public class Booking {
 		switch(n){ 
   		case 5:
   			//Styrka
-  			sql += "'ttype01'";
+  			sql += "'ttyp01'";
   			getOnlineTraining(m,sql);
   		break;		
   		case 4:
   			//Trän
-  			sql += "'ttype02'";
+  			sql += "'ttyp02'";
   			getOnlineTraining(m,sql);
   		break;
   		case 3:
   			//Ändra uppgifter
-  			sql += "'ttype03'";
+  			sql += "'ttyp03'";
   			getOnlineTraining(m,sql);
   		break;
   		case 2:
   			//Betalningshistorik
-  			sql += "'ttype04'";
+  			sql += "'ttyp04'";
   			getOnlineTraining(m,sql);
   		break;
   		case 1:
   			//AvslutaMedlemskap
-  			sql += "'ttype05'";
+  			sql += "'ttyp05'";
   			getOnlineTraining(m,sql);
   		break;
   		case 0:
@@ -755,19 +755,29 @@ public class Booking {
 				String sql = "DELETE FROM Member WHERE memID = '" + m.memID + "'";
 				String sql1 = "DELETE FROM Contract WHERE memID = '" + m.memID + "'";
 				String sql2 = "DELETE FROM Payment WHERE memID = '" + m.memID + "'";
-				try {
+				String sql3 = "DELETE FROM OnlineTrainingRecord WHERE memID = '" + m.memID + "'";
+            String sql4 = "DELETE FROM MemberGymRelation WHERE memID = '" + m.memID + "'";
+            String sql5 = "DELETE FROM BookingGroupTraining WHERE memID = '" + m.memID + "'";
+            try {
 					
-					PreparedStatement pstmt = DBManager.conn.prepareStatement(sql);
+					PreparedStatement pstmt = DBManager.conn.prepareStatement(sql3);
 					pstmt.executeUpdate();
 					pstmt = DBManager.conn.prepareStatement(sql1);
 					pstmt.executeUpdate();
 					pstmt = DBManager.conn.prepareStatement(sql2);
 					pstmt.executeUpdate();
-					
+               pstmt = DBManager.conn.prepareStatement(sql4);
+               pstmt.executeUpdate();
+               pstmt = DBManager.conn.prepareStatement(sql5);
+					pstmt.executeUpdate();
+               pstmt = DBManager.conn.prepareStatement(sql);
+					pstmt.executeUpdate();
+               
 					final JDialog dialog = new JDialog();
 					dialog.setAlwaysOnTop(true);    
-					JOptionPane.showMessageDialog(dialog, m.first_name + " " + m.last_name + "är nu borttagen.");
-					
+					JOptionPane.showMessageDialog(dialog, m.first_name + " " + m.last_name + " är nu borttagen.");
+					DBManager db = new DBManager(); 
+               db.menu();
 
 				    }catch (SQLException e1) {
 					   System.out.println(e1.getMessage() + " Gigaloser");
