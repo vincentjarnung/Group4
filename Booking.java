@@ -265,7 +265,10 @@ public class Booking {
  	   	int year;
 		int month;
 		int day;
+		int endHour;
+		int endMin;
 		String date;
+		String endTime;
  	   	
 		 try {
 	           Statement stmt  = DBManager.conn.createStatement();    
@@ -279,8 +282,15 @@ public class Booking {
 		        	calendar.set(Calendar.YEAR, year);
 		        	calendar.set(Calendar.MONTH, month-1);
 		        	calendar.set(Calendar.DAY_OF_MONTH, day);
+		        	endTime = rs.getString(4);
+		        	endHour = Integer.parseInt(endTime.substring(0,2));
+		        	endMin = Integer.parseInt(endTime.substring(3));
+		        	calendar.set(Calendar.HOUR_OF_DAY,endHour);
+		        	calendar.set(Calendar.MINUTE,endMin);
+		        	calendar.set(Calendar.SECOND,0);
 		        	   
 		        	Date trainDate = calendar.getTime();
+		        	System.out.println(trainDate);
 		        	
 		        	if (!rec) {
 			        	if (trainDate.after(today)) {
@@ -641,15 +651,13 @@ public class Booking {
 	
 	public Object[] generatePanelTrainRecord(Member m,ArrayList<String> values) {
 		
-		int counter = values.size()/9;
+		int counter = values.size()/12;
 		Object[] message = new Object[counter];
 		
-		for (int i = 0,n = 0; i<counter; i++, n+= 9) {
-			String trainName = values.get(i+n);
-			JLabel label1 = new JLabel(values.get(i+n) + " | " + values.get(i+1+n));
-			JLabel label2 = new JLabel(values.get(i+2+n) + "-" + values.get(i+3+n) +  "|" + values.get(i+4+n) + " " + values.get(i+5+n));
-			JLabel label3 = new JLabel(values.get(i+6+n) + " | " + values.get(i+7+n));
-			JLabel label4 = new JLabel(values.get(i+8+n) + " lediga platser av " + values.get(i+9+n));
+		for (int i = 0,n = 0; i<counter; i++, n+= 11) {
+			JLabel label1 = new JLabel(values.get(i+n) + " | " + values.get(i+1+n) + " | " + values.get(i+2+n) );
+			JLabel label2 = new JLabel(values.get(i+3+n) + "-" + values.get(i+4+n) +  "|" + values.get(i+5+n) + " " + values.get(i+6+n));
+			JLabel label3 = new JLabel(values.get(i+7+n) + " | " + values.get(i+8+n));
 			JPanel panel = new JPanel(new GridBagLayout());
 			panel.setBackground(Color.white);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -658,7 +666,6 @@ public class Booking {
 	        panel.add(label1);
 	        panel.add(label2);
 	        panel.add(label3);
-	        panel.add(label4);
 			
 	        
 	        message[i] = panel;
