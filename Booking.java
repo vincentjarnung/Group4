@@ -184,11 +184,16 @@ public class Booking {
 		};
 		String[] empChoices = {
 				  "Alla instruktörer",
+				  "Tinsley Mortimer",
 	    		  "Lisa Vanderpump", 
-	    		  "Lisa Rinna", 
+	    		  "Dorit Kemsley", 
 	    		  "NeNe Leakes",
 	    		  "Ramona Singer",
-	    		  "Erika Jayne"
+	    		  "Erika Jayne",
+	    		  "Kim Richards",
+	    		  "Paul Nassif",
+	    		  "Adrienne Maloof",
+	    		  "Lisa Rinna"
 			};
 		
 		JComboBox<String> gcb = new JComboBox<String>(gymChoices);
@@ -210,37 +215,53 @@ public class Booking {
 				currentFilters += "Ekdalen ";
 			}
 			if(tcb.getSelectedIndex() == 1){
-				filters += " AND trainType.trainTypeID = 'ttype01'";
+				filters += " AND trainType.trainTypeID = 'ttyp01'";
 				currentFilters += "Styrka ";
 			}else if(tcb.getSelectedIndex() == 2){
-				filters += " AND trainType.trainTypeID = 'ttype02'";
+				filters += " AND trainType.trainTypeID = 'ttyp02'";
 				currentFilters += "Kondition ";
 			}else if(tcb.getSelectedIndex() == 3){
-				filters += " AND trainType.trainTypeID = 'ttype03'";
+				filters += " AND trainType.trainTypeID = 'ttyp03'";
 				currentFilters += "Yoga ";
 			}else if(tcb.getSelectedIndex() == 4){
-				filters += " AND trainType.trainTypeID = 'ttype04'";
+				filters += " AND trainType.trainTypeID = 'ttyp04'";
 				currentFilters += "Stretch ";
 			}else if(tcb.getSelectedIndex() == 5){
-				filters += " AND trainType.trainTypeID = 'ttype05'";
+				filters += " AND trainType.trainTypeID = 'ttyp05'";
 				currentFilters += "Fit på 15 ";
 			}
 			if(ecb.getSelectedIndex() == 1){
-				filters += " AND Instructor.employeeID = 'emp01'";
-				currentFilters += "Lisa Vanderpump ";
+				filters += " AND Instructor.employeeID = 'emp001'";
+				currentFilters += "Tinsley Mortimer ";
 			}else if(ecb.getSelectedIndex() == 2){
-				filters += " AND Instructor.employeeID = 'emp02'";
-				currentFilters += "Lisa Rinna ";
+				filters += " AND Instructor.employeeID = 'emp002'";
+				currentFilters += "Lisa Vanderpump ";
 			}else if(ecb.getSelectedIndex() == 3){
-				filters += " AND Instructor.employeeID = 'emp03'";
-				currentFilters += "NeNe Leakes ";
+				filters += " AND Instructor.employeeID = 'emp003'";
+				currentFilters += "Dorit Kemsley ";
 			}else if(ecb.getSelectedIndex() == 4){
-				filters += " AND Instructor.employeeID = 'emp04'";
-				currentFilters += "Ramona Singer ";
+				filters += " AND Instructor.employeeID = 'emp004'";
+				currentFilters += "NeNe Leakes ";
 			}else if(ecb.getSelectedIndex() == 5){
-				filters += " AND Instructor.employeeID = 'empo5'";
+				filters += " AND Instructor.employeeID = 'emp005'";
+				currentFilters += "Ramona Singer ";
+			}else if(ecb.getSelectedIndex() == 6){
+				filters += " AND Instructor.employeeID = 'emp006'";
 				currentFilters += "Erika Jayne ";
+			}else if(ecb.getSelectedIndex() == 7){
+				filters += " AND Instructor.employeeID = 'emp007'";
+				currentFilters += "Kim Richards ";
+			}else if(ecb.getSelectedIndex() == 8){
+				filters += " AND Instructor.employeeID = 'emp008'";
+				currentFilters += "Paul Nassif ";
+			}else if(ecb.getSelectedIndex() == 9){
+				filters += " AND Instructor.employeeID = 'emp009'";
+				currentFilters += "Adrienne Maloof ";
+			}else if(ecb.getSelectedIndex() == 10){
+				filters += " AND Instructor.employeeID = 'emp010'";
+				currentFilters += "Lisa Rinna ";
 			}
+			
 			System.out.println(filters);
 			HittaPass(m,filters,currentFilters);
 		}else if(i == 1){
@@ -657,7 +678,7 @@ public class Booking {
 		for (int i = 0,n = 0; i<counter; i++, n+= 11) {
 			JLabel label1 = new JLabel(values.get(i+n) + " | " + values.get(i+1+n) + " | " + values.get(i+2+n) );
 			JLabel label2 = new JLabel(values.get(i+3+n) + "-" + values.get(i+4+n) +  "|" + values.get(i+5+n) + " " + values.get(i+6+n));
-			JLabel label3 = new JLabel(values.get(i+7+n) + " | " + values.get(i+8+n));
+			JLabel label3 = new JLabel(values.get(i+7+n));
 			JPanel panel = new JPanel(new GridBagLayout());
 			panel.setBackground(Color.white);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -687,7 +708,7 @@ public class Booking {
 		if (n == 0)
 			Profil(m);
 	}
-			
+	
 	public Object[] generatePanelPay(Member m,ArrayList<String> values) {
 		int counter = values.size()/3;
 		Object[] message = new Object[counter];
