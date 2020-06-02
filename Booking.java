@@ -480,7 +480,7 @@ public class Booking {
 	}
 	
 	public Object[] generatePanel(Member m,ArrayList<String> values,Boolean book) {
-		
+		//Baserat på ett exempel för hur man skapar en GridBagConstraints https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html 
 		int counter = values.size()/12;
 		System.out.println(counter);
 		Object[] message = new Object[counter];
@@ -794,25 +794,24 @@ public class Booking {
             String sql4 = "DELETE FROM MemberGymRelation WHERE memID = '" + m.memID + "'";
             String sql5 = "DELETE FROM BookingGroupTraining WHERE memID = '" + m.memID + "'";
             try {
-					
-					PreparedStatement pstmt = DBManager.conn.prepareStatement(sql3);
-					pstmt.executeUpdate();
-					pstmt = DBManager.conn.prepareStatement(sql1);
-					pstmt.executeUpdate();
-					pstmt = DBManager.conn.prepareStatement(sql2);
-					pstmt.executeUpdate();
-               pstmt = DBManager.conn.prepareStatement(sql4);
-               pstmt.executeUpdate();
-               pstmt = DBManager.conn.prepareStatement(sql5);
-					pstmt.executeUpdate();
-               pstmt = DBManager.conn.prepareStatement(sql);
-					pstmt.executeUpdate();
+            	PreparedStatement pstmt = DBManager.conn.prepareStatement(sql3);
+				pstmt.executeUpdate();
+				pstmt = DBManager.conn.prepareStatement(sql1);
+				pstmt.executeUpdate();
+				pstmt = DBManager.conn.prepareStatement(sql2);
+				pstmt.executeUpdate();
+				pstmt = DBManager.conn.prepareStatement(sql4);
+				pstmt.executeUpdate();
+				pstmt = DBManager.conn.prepareStatement(sql5);
+				pstmt.executeUpdate();
+				pstmt = DBManager.conn.prepareStatement(sql);
+				pstmt.executeUpdate();
                
-					final JDialog dialog = new JDialog();
-					dialog.setAlwaysOnTop(true);    
-					JOptionPane.showMessageDialog(dialog, m.first_name + " " + m.last_name + " är nu borttagen.");
-					DBManager db = new DBManager(); 
-               db.menu();
+				final JDialog dialog = new JDialog();
+				dialog.setAlwaysOnTop(true);    
+				JOptionPane.showMessageDialog(dialog, m.first_name + " " + m.last_name + " är nu borttagen.");
+				DBManager db = new DBManager(); 
+				db.menu();
 
 				    }catch (SQLException e1) {
 					   System.out.println(e1.getMessage() + " Gigaloser");
@@ -825,17 +824,17 @@ public class Booking {
 	}
 	
 	public void changeValues(Member m,Boolean[] lis, String[] ans){
-
-	      JTextField[] fields = new JTextField[]{
-	      new JTextField(),
-	      new JTextField(),
-	      new JTextField(),
-	      new JTextField(),
-	      new JTextField(),
-	      new JTextField(),
-	      new JTextField(),
-	      new JTextField(),
-	      new JPasswordField()};
+		// Baserat på exempel från http://www.java2s.com/Tutorial/Java/0240__Swing/TheJOptionPaneMessageArgumentisanObjectnotaString.htm#:~:text=If%20the%20message%20is%20an,label%20in%20the%20message%20area.
+		JTextField[] fields = new JTextField[]{
+				new JTextField(),
+				new JTextField(),
+				new JTextField(),
+				new JTextField(),
+				new JTextField(),
+				new JTextField(),
+				new JTextField(),
+				new JTextField(),
+				new JPasswordField()};
 
 	      Boolean checker = true;
 

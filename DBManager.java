@@ -39,7 +39,7 @@ public class DBManager {
    String exDate = "";
    
    static Booking book;
-
+   //Koden här är baserad på föregående kurs, där vi hämtar och skriver information till databasen är baserat på kunskap från föregående kurs.
    public static Connection conn = null;
    // Sökväg till SQLite-databas. OBS! Ändra sökväg så att den pekar ut din databas
    public static final String DB_URL = "jdbc:sqlite:/Users/vincent/Desktop/Group4Java/FitnessAB.sqlite";
@@ -251,7 +251,7 @@ public class DBManager {
    }
 
    public void generateMemDialog(Boolean[] lis, String[] ans){
-
+	  // Baserat på exempel från http://www.java2s.com/Tutorial/Java/0240__Swing/TheJOptionPaneMessageArgumentisanObjectnotaString.htm#:~:text=If%20the%20message%20is%20an,label%20in%20the%20message%20area.
       JTextField[] fields = new JTextField[]{
       new JTextField(),
       new JTextField(),
@@ -628,7 +628,7 @@ public class DBManager {
 	   JLabel machineL = new JLabel(machinetext);
 	   JLabel weightL = new JLabel(weighttext);
 	   JLabel openHoursL = new JLabel(openingHours);
-	   
+	   //Baserat på ett exempel för hur man skapar en GridBagConstraintshttps://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html 
 	   GridBagConstraints constraints = new GridBagConstraints();
 	   constraints.anchor = GridBagConstraints.NORTHWEST;
 	   JPanel panel = new JPanel();
